@@ -1,13 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class Screen extends JPanel implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
     private BoardGame game;
     private Timer timer;
     private JButton startButton, rulesButton;
 
-    public Screen() {
+    public Screen() throws IOException {
         game = new BoardGame();
         timer = new Timer(50, this);
         timer.start();
@@ -27,12 +28,16 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        game.draw(g);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
             System.out.println("Start!");
+        }
+        if (e.getSource() == timer) {
+            repaint();
         }
     }
 
