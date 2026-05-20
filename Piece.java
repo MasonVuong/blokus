@@ -90,6 +90,20 @@ public class Piece extends Sprite {
         return false; // Point is not touching any block of this piece
     }
 
+    /**
+ * Snaps the piece's X and Y anchor coordinates to the nearest multiple of 25.
+ * This aligns the piece perfectly with the board grid lines.
+ */
+    public void autoAlign() {
+        int currentX = getX();
+        int currentY = getY();
+
+        // Divide by 25.0 to preserve the decimal, round to nearest integer, scale back up
+        int snappedX = (int) Math.round(currentX / 25.0) * 25;
+        int snappedY = (int) Math.round(currentY / 25.0) * 25;
+
+        setPosition(snappedX, snappedY);
+    }
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
 }
