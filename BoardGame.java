@@ -155,6 +155,17 @@ public class BoardGame {
         }
     }
 
+    public void alignPiece() {
+        for (Piece piece : allPieces.get(playerNum)) {
+            if (piece.getSelected()) {
+                piece.autoAlign();
+            }
+        }
+        if (testingPiece.getSelected()) {
+            testingPiece.autoAlign();
+        }
+    }
+
     public String getState() {return state;}
     public void setState(String state) {this.state = state;}
 }

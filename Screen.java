@@ -74,7 +74,10 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     }
 
     @Override public void mousePressed(MouseEvent e) {game.selectPiece(e.getX(), e.getY(), true);}
-    @Override public void mouseReleased(MouseEvent e) {game.selectPiece(e.getX(), e.getY(), false);}
+    @Override public void mouseReleased(MouseEvent e) {
+        game.alignPiece();
+        game.selectPiece(e.getX(), e.getY(), false);
+    }
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
     @Override public void mouseClicked(MouseEvent e) {}
