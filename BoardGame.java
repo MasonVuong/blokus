@@ -3,12 +3,14 @@ import java.util.*;
 import java.io.*;
 
 public class BoardGame {
-    private Grid grid;
-    private int[][] board;
-    private ArrayList<Piece> bluePieces, yellowPieces, redPieces, greenPieces;
+    private Grid grid, tutorialGrid;
+    private int[][] board, tutorialBoard;
+    private ArrayList<Piece> bluePieces, yellowPieces, redPieces, greenPieces, tutorialPieces;
     private ArrayList<ArrayList<Piece>> allPieces;
     private Color[] pieceColors;
     private int playerNum, prevMouseX, prevMouseY;
+    private String state;
+    private Piece testingPiece;
 
 
     public BoardGame() throws IOException {
@@ -60,6 +62,7 @@ public class BoardGame {
                 rowNum++;
             }
             line = br.readLine();
+            state = "Start";
         }
 
         board = new int[20][20];
@@ -69,13 +72,44 @@ public class BoardGame {
             }
         }
         playerNum = 0;
+
+        tutorialPieces = new ArrayList<>();
+        tutorialPieces.add(new Piece(25, 300, 25, new int[][] {{0, 1, 0}, {0, 1, 0}, {1, 1, 1}}, Color.GREEN));
+        tutorialPieces.add(new Piece(75, 225, 25, new int[][] {{0, 0, 1}, {0, 0, 1}, {1, 1, 1}}, Color.GREEN));
+        tutorialPieces.add(new Piece(150, 175, 25, new int[][] {{0, 0, 1}, {1, 1, 1}}, Color.GREEN));
+        tutorialPieces.add(new Piece(150, 225, 25, new int[][] {{0, 1, 1}, {1, 1, 0}, {1, 0, 0}}, Color.RED));
+        tutorialPieces.add(new Piece(175, 300, 25, new int[][] {{1, 0}, {1, 1}, {1, 0}}, Color.RED));
+        tutorialPieces.add(new Piece(225, 300, 25, new int[][] {{0, 1}, {0, 1}, {1, 1}}, Color.RED));
+
+        tutorialPieces.add(new Piece(525, 125, 25, new int[][] {{0, 1, 1}, {1, 1, 0}, {1, 0, 0}}, Color.GREEN));
+        tutorialPieces.add(new Piece(525, 225, 25, new int[][] {{1, 0}, {1, 1}, {1, 0}}, Color.GREEN));
+        tutorialPieces.add(new Piece(675, 125, 25, new int[][] {{0, 1, 0}, {0, 1, 0}, {1, 1, 1}}, Color.RED));
+        tutorialPieces.add(new Piece(675, 225, 25, new int[][] {{0, 0, 1}, {0, 0, 1}, {1, 1, 1}}, Color.RED));
+
+        testingPiece = new Piece(25, 500, 25, new int[][] {{0, 1, 1}, {1, 1, 0}, {1, 0, 0}}, Color.YELLOW);
+        tutorialGrid = new Grid(25, 125, 25);
+        tutorialBoard = new int[10][10];
+        for (int r = 0; r < tutorialBoard.length; r++) {
+            for (int c = 0; c < tutorialBoard[r].length; c++) {
+                tutorialBoard[r][c] = -1;
+            }
+        }
     }
 
     public void draw(Graphics g) {
-        grid.draw(g, board, pieceColors);
-        for (Piece piece : allPieces.get(playerNum)) {
-            piece.draw(g);
+        if (state.equals("play")) {
+            grid.draw(g, board, pieceColors);
+            for (Piece piece : allPieces.get(playerNum)) {
+                piece.draw(g);
+            }
+        } else if (state.equals("rules")) {
+            tutorialGrid.draw(g, tutorialBoard, pieceColors);
+            for (Piece piece : tutorialPieces) {
+                piece.draw(g);
+            }
+            testingPiece.draw(g);
         }
+        
     }
 
     public void selectPiece(int x, int y, boolean selected) {
@@ -85,6 +119,11 @@ public class BoardGame {
             } else {
                 piece.setSelected(false);
             }
+        }
+        if (selected && testingPiece.containsPoint(x, y)) {
+            testingPiece.setSelected(true);
+        } else {
+            testingPiece.setSelected(false);
         }
         prevMouseX = x;
         prevMouseY = y;
@@ -98,6 +137,11 @@ public class BoardGame {
                 prevMouseY = y;
             }
         }
+        if (testingPiece.getSelected()) {
+            testingPiece.move(x - prevMouseX, y - prevMouseY);
+            prevMouseX = x;
+            prevMouseY = y;
+        }
     }
 
     public void rotatePiece(boolean clockwise) {
@@ -106,5 +150,11 @@ public class BoardGame {
                 piece.rotate(clockwise);
             }
         }
+        if (testingPiece.getSelected()) {
+            testingPiece.rotate(clockwise);
+        }
     }
+
+    public String getState() {return state;}
+    public void setState(String state) {this.state = state;}
 }

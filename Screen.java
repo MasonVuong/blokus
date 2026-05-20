@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Screen extends JPanel implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
     private BoardGame game;
     private Timer timer;
-    private JButton startButton, rulesButton;
+    private JButton startButton, rulesButton, backButton;
 
     public Screen() throws IOException {
         game = new BoardGame();
@@ -19,6 +19,19 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         startButton.addActionListener(this);
         add(startButton);
         startButton.setFocusable(false); 
+
+        rulesButton = new JButton("Rules");
+        rulesButton.setBounds(450, 500, 100, 50);
+        rulesButton.addActionListener(this);
+        add(rulesButton);
+        rulesButton.setFocusable(false);
+
+        backButton = new JButton("Back");
+        backButton.setBounds(50, 50, 100, 50);
+        backButton.addActionListener(this);
+        add(backButton);
+        backButton.setFocusable(false);
+        backButton.setVisible(false);
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -42,9 +55,20 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
-            System.out.println("Start!");
-        }
-        if (e.getSource() == timer) {
+            game.setState("play");
+            startButton.setVisible(false);
+            rulesButton.setVisible(false);
+        } else if (e.getSource() == rulesButton) {
+            game.setState("rules");
+            startButton.setVisible(false);
+            rulesButton.setVisible(false);
+            backButton.setVisible(true);
+        } else if (e.getSource() == backButton) {
+            game.setState("start");
+            backButton.setVisible(false);
+            startButton.setVisible(true);
+            rulesButton.setVisible(true);
+        } else if (e.getSource() == timer) {
             repaint();
         }
     }
