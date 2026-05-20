@@ -47,11 +47,11 @@ public class BoardGame {
             } else if (line.equals("")) {
                 for (int j = 0; j < allPieces.size(); j++) {
                     allPieces.get(j).add(new Piece(x, y, 25, layout, pieceColors[j]));
-                    x += 100;
-                    if (x >= 900) {
-                        x = 0;
-                        y += 100;
-                    }
+                }
+                x += 100;
+                if (x > 400) {
+                    x = 0;
+                    y += 100;
                 }
                 isRowNum = true;
             } else {
@@ -158,7 +158,9 @@ public class BoardGame {
     public void alignPiece() {
         for (Piece piece : allPieces.get(playerNum)) {
             if (piece.getSelected()) {
+                
                 piece.autoAlign();
+                
             }
         }
         if (testingPiece.getSelected()) {
