@@ -37,7 +37,15 @@ public class Piece extends Sprite {
         
         this.shape = rotatedShape;
     }
-
+    /**
+     * Shifts the sprite's position by a relative offset amount.
+     * @param dx The change in X coordinates (delta X)
+     * @param dy The change in Y coordinates (delta Y)
+     */
+    public void move(int dx, int dy) {
+        this.setX(this.getX() + dx);
+        this.setY(this.getY() + dy);
+    }
     public void draw(Graphics g) {
         int size = getSquareSize();
 

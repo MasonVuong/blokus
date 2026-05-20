@@ -8,7 +8,7 @@ public class BoardGame {
     private ArrayList<Piece> bluePieces, yellowPieces, redPieces, greenPieces;
     private ArrayList<ArrayList<Piece>> allPieces;
     private Color[] pieceColors;
-    private int playerNum;
+    private int playerNum, prevMouseX, prevMouseY;
 
 
     public BoardGame() throws IOException {
@@ -86,12 +86,16 @@ public class BoardGame {
                 piece.setSelected(false);
             }
         }
+        prevMouseX = x;
+        prevMouseY = y;
     }
 
     public void movePiece(int x, int y) {
         for (Piece piece : allPieces.get(playerNum)) {
             if (piece.getSelected()) {
-                piece.setPosition(x, y);
+                piece.move(x - prevMouseX, y - prevMouseY);
+                prevMouseX = x;
+                prevMouseY = y;
             }
         }
     }
