@@ -4,49 +4,39 @@ import java.awt.Graphics;
 public class Piece extends Sprite {
     private int[][] shape; 
     private Color color;
+    private boolean selected;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
         this.shape = shape;
         this.color = color;
+        selected = false;
     }
-
-    /**
-     * Rotates the piece 90 degrees clockwise.
+    /*
+     * Rotates the piece 90 degrees.
+     * @param clockwise true to rotate clockwise, false to rotate counter-clockwise.
      */
-    public void rotateClockwise() {
+    public void rotate(boolean clockwise) {
         int oldRows = shape.length;
         int oldCols = shape[0].length;
         
+        // Both directions result in swapped dimensions
         int[][] rotatedShape = new int[oldCols][oldRows];
         
         for (int r = 0; r < oldRows; r++) {
             for (int c = 0; c < oldCols; c++) {
-                rotatedShape[c][oldRows - 1 - r] = shape[r][c];
+                if (clockwise) {
+                    // Clockwise mapping
+                    rotatedShape[c][oldRows - 1 - r] = shape[r][c];
+                } else {
+                    // Counter-clockwise mapping
+                    rotatedShape[oldCols - 1 - c][r] = shape[r][c];
+                }
             }
         }
         
         this.shape = rotatedShape;
     }
-
-    /**
-     * Rotates the piece 90 degrees counter-clockwise.
-     */
-    public void rotateCounterClockwise() {
-        int oldRows = shape.length;
-        int oldCols = shape[0].length;
-        
-        int[][] rotatedShape = new int[oldCols][oldRows];
-        
-        for (int r = 0; r < oldRows; r++) {
-            for (int c = 0; c < oldCols; c++) {
-                // Map the old columns from right-to-left into the new rows from top-to-bottom
-                rotatedShape[oldCols - 1 - c][r] = shape[r][c];
-            }
-        }
-        
-        this.shape = rotatedShape;
-    }   
 
     public void draw(Graphics g) {
         int size = getSquareSize();
@@ -91,4 +81,7 @@ public class Piece extends Sprite {
         }
         return false; // Point is not touching any block of this piece
     }
+
+    public boolean getSelected() {return selected;}
+    public void setSelected(boolean selected) {this.selected = selected;}
 }

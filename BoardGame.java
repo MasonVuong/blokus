@@ -8,6 +8,7 @@ public class BoardGame {
     private ArrayList<Piece> bluePieces, yellowPieces, redPieces, greenPieces;
     private ArrayList<ArrayList<Piece>> allPieces;
     private Color[] pieceColors;
+    private int playerNum;
 
 
     public BoardGame() throws IOException {
@@ -67,12 +68,39 @@ public class BoardGame {
                 board[r][c] = -1;
             }
         }
+        playerNum = 0;
     }
 
     public void draw(Graphics g) {
-        for (Piece piece : redPieces) {
+        grid.draw(g, board, pieceColors);
+        for (Piece piece : allPieces.get(playerNum)) {
             piece.draw(g);
         }
-        grid.draw(g, board, pieceColors);
+    }
+
+    public void selectPiece(int x, int y, boolean selected) {
+        for (Piece piece : allPieces.get(playerNum)) {
+            if (selected && piece.containsPoint(x, y)) {
+                piece.setSelected(true);
+            } else {
+                piece.setSelected(false);
+            }
+        }
+    }
+
+    public void movePiece(int x, int y) {
+        for (Piece piece : allPieces.get(playerNum)) {
+            if (piece.getSelected()) {
+                piece.setPosition(x, y);
+            }
+        }
+    }
+
+    public void rotatePiece(boolean clockwise) {
+        for (Piece piece : allPieces.get(playerNum)) {
+            if (piece.getSelected()) {
+                piece.rotate(clockwise);
+            }
+        }
     }
 }

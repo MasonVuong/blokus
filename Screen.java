@@ -18,6 +18,14 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         startButton.setBounds(450, 400, 100, 50);
         startButton.addActionListener(this);
         add(startButton);
+        startButton.setFocusable(false); 
+
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        this.addKeyListener(this);
+
+        this.setFocusable(true);
+        this.requestFocusInWindow();
     }
 
     @Override
@@ -41,15 +49,21 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         }
     }
 
-    @Override public void mousePressed(MouseEvent e) {}
-    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mousePressed(MouseEvent e) {game.selectPiece(e.getX(), e.getY(), true);}
+    @Override public void mouseReleased(MouseEvent e) {game.selectPiece(e.getX(), e.getY(), false);}
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
     @Override public void mouseClicked(MouseEvent e) {}
     @Override public void mouseMoved(MouseEvent e) {}
-    @Override public void mouseDragged(MouseEvent e) {}
+    @Override public void mouseDragged(MouseEvent e) {game.movePiece(e.getX(), e.getY());}
 
-    @Override public void keyPressed(KeyEvent e) {}
+    @Override public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            game.rotatePiece(true);
+        } else if (e.getKeyCode() == KeyEvent.VK_Q) {
+            game.rotatePiece(false);
+        }
+    }
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
 }
