@@ -86,6 +86,8 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             game.rotatePiece(true);
         } else if (e.getKeyCode() == KeyEvent.VK_Q) {
             game.rotatePiece(false);
+        } else if (e.getKeyCode() == KeyEvent.VK_F1) {
+            System.out.println("Skip");
         }
     }
     @Override public void keyReleased(KeyEvent e) {}
