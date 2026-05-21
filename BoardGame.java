@@ -1,9 +1,7 @@
 /*
 To-Do:
-Player Names from Screen
 Full Block Detection
 Endscreen (Winner and Square Tallying)
-Pieces Snap Back to Inital Position When isValidMove() is false
 Add Banner On Top
 */
 
@@ -47,9 +45,6 @@ public class BoardGame {
         int rowNum = 0;
         int[][] layout = new int[0][0];
 
-        int x = 0;
-        int y = 0;
-
         while (line != null) {
             if (isRowNum) {
                 String[] dimensions = line.split(",");
@@ -58,12 +53,7 @@ public class BoardGame {
                 rowNum = 0;
             } else if (line.equals("")) {
                 for (int j = 0; j < allPieces.size(); j++) {
-                    allPieces.get(j).add(new Piece(x, y, 25, layout, pieceColors[j]));
-                }
-                x += 100;
-                if (x > 400) {
-                    x = 0;
-                    y += 100;
+                    allPieces.get(j).add(new Piece(0, 0, 25, layout, pieceColors[j]));
                 }
                 isRowNum = true;
             } else {
@@ -78,9 +68,15 @@ public class BoardGame {
         }
         if (layout.length != 0) {
             for (int j = 0; j < allPieces.size(); j++) {
-                allPieces.get(j).add(new Piece(x, y, 25, layout, pieceColors[j]));
+                allPieces.get(j).add(new Piece(0, 0, 25, layout, pieceColors[j]));
             }
         }
+
+        for (int i = 0; i < 4; i++) {
+            playerNum = i;
+            organizePieces();
+        }
+        playerNum = 0;  
 
         board = new int[20][20];
         for (int r = 0; r < board.length; r++) {
@@ -196,6 +192,7 @@ public class BoardGame {
     }
     
     public void alignPiece() {
+        Piece removed = null;
         for (Piece piece : allPieces.get(playerNum)) {
             if (piece.getSelected()) {
                 piece.autoAlign();
@@ -210,13 +207,18 @@ public class BoardGame {
                             }
                         }
                     }
-                    playerNum++;
-                    if (playerNum > 3) {
-                        playerNum = 0;
-                    }
+                    removed = piece;
                 } else {
                     piece.resetPosition();
                 } 
+            }
+        }
+        if (removed != null) {
+            allPieces.get(playerNum).remove(removed);
+            organizePieces();
+            playerNum++;
+            if (playerNum > 3) {
+                playerNum = 0;
             }
         }
         if (testingPiece.getSelected()) {
@@ -294,6 +296,25 @@ public class BoardGame {
         return true;
     }
 
+    public void organizePieces() {
+        int x = 25;
+        int y = 25;
+        int longestY = 0;
+        for (Piece piece : allPieces.get(playerNum)) {
+            int[][] layout = piece.getLayout();
+            if (x + layout[0].length * 25 + 25 >= 425) {
+                x = 25;
+                y += longestY + 25;
+                longestY = 0;
+            }
+            piece.setPosition(x, y);
+            piece.setOgPosition(x, y);
+            x += layout[0].length * 25 + 25;
+            if (layout.length * 25 > longestY) {
+                longestY = layout.length * 25;
+            }
+        }
+    }
     public String getState() {return state;}
     public void setState(String state) {this.state = state;}
 }
