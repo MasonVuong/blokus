@@ -131,4 +131,8 @@ public class Piece extends Sprite {
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
     public int[][] getLayout() {return shape;}
+    public void setOgPosition(int ogX, int ogY) {
+        this.ogX = ogX;
+        this.ogY = ogY;
+    }
 }
