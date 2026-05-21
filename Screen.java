@@ -7,10 +7,12 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     private BoardGame game;
     private Timer timer;
     private JButton startButton, rulesButton, backButton;
+    private String[] names;
 
     public Screen() throws IOException {
-        game = new BoardGame();
-        timer = new Timer(50, this);
+        names = new String[] {"Blue", "Yellow", "Red", "Green"};
+        game = new BoardGame(names);
+        timer = new Timer(30, this);
         timer.start();
         setLayout(null);
 
