@@ -5,12 +5,16 @@ public class Piece extends Sprite {
     private int[][] shape; 
     private Color color;
     private boolean selected;
+    private int ogX, ogY, rotationAmount;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
         this.shape = shape;
         this.color = color;
         selected = false;
+        ogX = x;
+        ogY = y;
+        rotationAmount = 0;
     }
     /*
      * Rotates the piece 90 degrees.
@@ -28,10 +32,22 @@ public class Piece extends Sprite {
                 if (clockwise) {
                     // Clockwise mapping
                     rotatedShape[c][oldRows - 1 - r] = shape[r][c];
+                    
                 } else {
                     // Counter-clockwise mapping
                     rotatedShape[oldCols - 1 - c][r] = shape[r][c];
                 }
+            }
+        }
+        if (clockwise) {
+            rotationAmount += 90;
+            if (rotationAmount == 360) {
+                rotationAmount = 0;
+            }
+        } else {
+            rotationAmount -= 90;
+            if (rotationAmount == -90) {
+                rotationAmount = 270;
             }
         }
         
@@ -104,6 +120,15 @@ public class Piece extends Sprite {
 
         setPosition(snappedX, snappedY);
     }
+
+    public void resetPosition() {
+        setX(ogX);
+        setY(ogY);
+        while (rotationAmount != 0) {
+            rotate(false);
+        }
+    }
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
+    public int[][] getLayout() {return shape;}
 }
