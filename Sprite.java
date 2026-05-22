@@ -31,6 +31,7 @@ public abstract class Sprite {
         g.setColor(Color.BLACK);
         g.drawRect(blockX, blockY, squareSize, squareSize);
     }
+   
     
     // Removed the abstract draw(Graphics g) method to allow Grid and Piece 
     // to have completely tailored parameter inputs.
