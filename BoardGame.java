@@ -1,5 +1,6 @@
 /*
 To-Do:
+3D Rotation  <---- Do this Now
 Full Block Detection
 Endscreen (Winner and Square Tallying)
 Add Banner On Top
@@ -191,6 +192,17 @@ public class BoardGame {
         }
     }
     
+    public void flipPiece(boolean horizontal) {
+        for (Piece piece : allPieces.get(playerNum)) {
+            if (piece.getSelected()) {
+                piece.flip(horizontal);
+            }
+        }
+        if (testingPiece.getSelected()) {
+            testingPiece.flip(horizontal);
+        }
+    }
+
     public void alignPiece() {
         Piece removed = null;
         for (Piece piece : allPieces.get(playerNum)) {
