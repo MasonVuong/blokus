@@ -1,7 +1,6 @@
 /*
 To-Do:
-3D Rotation  <---- Do this Now
-Full Block Detection
+Full Block Detection <--- Do this now
 Endscreen (Winner and Square Tallying)
 Add Banner On Top
 */
@@ -144,6 +143,14 @@ public class BoardGame {
             g.setFont(rulesTitleFont);
             g.drawString("9 (Winner)", 500, 475);
             g.drawString("10", 500, 575);
+        } else if (state.equals("endscreen")) {
+            int[] ranks = rankPlayers();
+            g.setColor(Color.BLACK);
+            g.setFont(rulesTitleFont);
+            for (int i = 0; i < 4; i++) {
+                g.drawString(playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]), 300, 100 + i * 100);
+            }
+            
         }
     }
 
@@ -228,10 +235,20 @@ public class BoardGame {
         if (removed != null) {
             allPieces.get(playerNum).remove(removed);
             organizePieces();
-            playerNum++;
-            if (playerNum > 3) {
-                playerNum = 0;
+            int playersTested = 0;
+            do {
+                playerNum++;
+                playersTested++;
+                if (playersTested > 4) {
+                    state = "endscreen";
+                    break;
+                }
+                if (playerNum > 3) {
+                    playerNum = 0;
+                }
             }
+            while (!canMakeMove());
+            
         }
         if (testingPiece.getSelected()) {
             testingPiece.autoAlign();
@@ -308,6 +325,28 @@ public class BoardGame {
         return true;
     }
 
+    public boolean canMakeMove() {
+        for (Piece piece : allPieces.get(playerNum)) {
+            for (int flipNum = 0; flipNum < 2; flipNum++) {
+                for (int rotNum = 0; rotNum < 4; rotNum++) {
+                    for (int r = 0; r < board.length; r++) {
+                        for (int c = 0; c < board[r].length; c++) {
+                            piece.setPosition(grid.getX() + c * grid.getSquareSize(), grid.getY() + r * grid.getSquareSize());
+                            if (isValidMove(piece)) {
+                                piece.resetPosition();
+                                return true;
+                            }
+                        }
+                    }
+                    piece.rotate(true);
+                }
+                piece.flip(true);
+            }
+            piece.resetPosition();
+        }
+        return false;
+    }
+
     public void organizePieces() {
         int x = 25;
         int y = 25;
@@ -326,6 +365,31 @@ public class BoardGame {
                 longestY = layout.length * 25;
             }
         }
+    }
+
+    public int[] rankPlayers() {
+        int[] ranks = new int[] {0, 1, 2, 3};
+        for (int i = 0; i < playerNames.length - 1; i++) {
+            for (int j = 0; j < playerNames.length - 1 - i; j++) {
+                if (getSquaresLeft(ranks[j]) > getSquaresLeft(ranks[j+1])) {
+                    int temp = ranks[j];
+                    ranks[j] = ranks[j+1];
+                    ranks[j+1] = temp;
+                }
+            }
+        }
+        return ranks;
+    }
+
+    public int getSquaresLeft() {
+        return getSquaresLeft(playerNum);
+    }
+    public int getSquaresLeft(int player) {
+        int total = 0;
+        for (Piece piece : allPieces.get(player)) {
+            total += piece.getSquares();
+        }
+        return total;
     }
     public String getState() {return state;}
     public void setState(String state) {this.state = state;}

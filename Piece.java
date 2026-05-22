@@ -5,7 +5,7 @@ public class Piece extends Sprite {
     private int[][] shape; 
     private Color color;
     private boolean selected, flipped;
-    private int ogX, ogY, rotationAmount;
+    private int squares, ogX, ogY, rotationAmount;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
@@ -16,6 +16,11 @@ public class Piece extends Sprite {
         ogY = y;
         rotationAmount = 0;
         flipped = false;
+        for (int r = 0; r < shape.length; r++) {
+            for (int c = 0; c < shape[r].length; c++) {
+                squares += shape[r][c];
+            }
+        }
     }
     /*
      * Rotates the piece 90 degrees.
@@ -153,6 +158,9 @@ public class Piece extends Sprite {
         while (rotationAmount != 0) {
             rotate(false);
         }
+        if (flipped) {
+            flip(true);
+        }
     }
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
@@ -162,4 +170,5 @@ public class Piece extends Sprite {
         this.ogY = ogY;
     }
     public boolean isFlipped() {return flipped;}
+    public int getSquares() {return squares;}
 }

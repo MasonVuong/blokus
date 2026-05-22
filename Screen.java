@@ -99,6 +99,8 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             game.flipPiece(false); //Vertical
         } else if (e.getKeyCode() == KeyEvent.VK_D) {
             game.flipPiece(true); //Horizontal
+        } else if (e.getKeyCode() == KeyEvent.VK_F1) {
+            game.setState("endscreen");
         }
     }
     @Override public void keyReleased(KeyEvent e) {}
