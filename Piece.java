@@ -63,6 +63,8 @@ public class Piece extends Sprite {
         this.setY(this.getY() + dy);
     }
     public void draw(Graphics g) {
+    
+     
         int size = getSquareSize();
 
         for (int r = 0; r < shape.length; r++) {
@@ -128,6 +130,9 @@ public class Piece extends Sprite {
             rotate(false);
         }
     }
+    
+
+
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
     public int[][] getLayout() {return shape;}

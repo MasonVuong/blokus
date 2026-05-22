@@ -1,7 +1,7 @@
 /*
 To-Do:
 Full Block Detection
-Endscreen (Winner and Square Tallying)
+  (Winner and Square Tallying)
 Add Banner On Top
 */
 
@@ -120,6 +120,20 @@ public class BoardGame {
             for (Piece piece : allPieces.get(playerNum)) {
                 piece.draw(g);
             }
+            //Draw arrows
+
+           //Blue
+            drawArrows(g, grid.getX() - 5 , grid.getY() - 5, Color.BLUE);
+           //green
+           drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() - 5, Color.GREEN);
+           //yellow
+           drawArrows(g, grid.getX() - 5 , grid.getY() + 20 * grid.getSquareSize() + 5, Color.YELLOW);
+           //Red
+           drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() + 20 * grid.getSquareSize() + 5, Color.RED);
+
+
+
+
         } else if (state.equals("rules")) {
             tutorialGrid.draw(g, tutorialBoard, pieceColors);
             for (Piece piece : tutorialPieces) {
@@ -315,6 +329,33 @@ public class BoardGame {
             }
         }
     }
+
+   public void drawArrows(Graphics g, int arrowX, int arrowY, Color color) {
+
+    //angle based on color
+    int angle = 45; 
+    if (color.equals(Color.GREEN))  angle = 135;  
+    if (color.equals(Color.RED))    angle = -135; 
+    if (color.equals(Color.YELLOW)) angle = -45;  
+
+    // cast g2d
+    Graphics2D g2d = (Graphics2D) g.create(); 
+    g2d.setColor(color);
+    
+    // origin goes to cords provided
+    g2d.translate(arrowX, arrowY);
+    g2d.rotate(Math.toRadians(angle));
+
+    // draw arrow
+    g2d.fillRect(-35, -6, 25, 12); 
+    
+    int[] xPoints = {-10, -10, 0}; 
+    int[] yPoints = {-10, 10, 0}; 
+    g2d.fillPolygon(xPoints, yPoints, 3);
+
+   
+}
+
     public String getState() {return state;}
     public void setState(String state) {this.state = state;}
 }
