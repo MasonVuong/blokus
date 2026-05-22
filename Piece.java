@@ -4,8 +4,8 @@ import java.awt.Graphics;
 public class Piece extends Sprite {
     private int[][] shape; 
     private Color color;
-    private boolean selected;
-    private int ogX, ogY, rotationAmount;
+    private boolean selected, flipped;
+    private int squares, ogX, ogY, rotationAmount;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
@@ -15,6 +15,12 @@ public class Piece extends Sprite {
         ogX = x;
         ogY = y;
         rotationAmount = 0;
+        flipped = false;
+        for (int r = 0; r < shape.length; r++) {
+            for (int c = 0; c < shape[r].length; c++) {
+                squares += shape[r][c];
+            }
+        }
     }
     /*
      * Rotates the piece 90 degrees.
@@ -52,6 +58,31 @@ public class Piece extends Sprite {
         }
         
         this.shape = rotatedShape;
+    }
+
+        /**
+     * Flips the piece 180 degrees over a designated axis.
+     * @param horizontal true to flip left-to-right, false to flip top-to-bottom.
+     */
+    public void flip(boolean horizontal) {
+        int rows = shape.length;
+        int cols = shape[0].length;
+        int[][] mirroredShape = new int[rows][cols];
+        
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (horizontal) {
+                    // Reverse columns
+                    mirroredShape[r][cols - 1 - c] = shape[r][c];
+                } else {
+                    // Reverse rows
+                    mirroredShape[rows - 1 - r][c] = shape[r][c];
+                }
+            }
+        }
+        
+        this.shape = mirroredShape;
+        this.flipped = !this.flipped; // Every flip toggles face-up vs face-down
     }
     /**
      * Shifts the sprite's position by a relative offset amount.
@@ -127,6 +158,9 @@ public class Piece extends Sprite {
         while (rotationAmount != 0) {
             rotate(false);
         }
+        if (flipped) {
+            flip(true);
+        }
     }
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
@@ -135,4 +169,6 @@ public class Piece extends Sprite {
         this.ogX = ogX;
         this.ogY = ogY;
     }
+    public boolean isFlipped() {return flipped;}
+    public int getSquares() {return squares;}
 }

@@ -88,9 +88,19 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
 
     @Override public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_E) {
-            game.rotatePiece(true);
+            game.rotatePiece(true); //Clockwise
         } else if (e.getKeyCode() == KeyEvent.VK_Q) {
-            game.rotatePiece(false);
+            game.rotatePiece(false); //Counterclockwise
+        } else if (e.getKeyCode() == KeyEvent.VK_W) {
+            game.flipPiece(false); //Vertical
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+            game.flipPiece(true); //Horizontal
+        } else if (e.getKeyCode() == KeyEvent.VK_S) {
+            game.flipPiece(false); //Vertical
+        } else if (e.getKeyCode() == KeyEvent.VK_D) {
+            game.flipPiece(true); //Horizontal
+        } else if (e.getKeyCode() == KeyEvent.VK_F1) {
+            game.setState("endscreen");
         }
     }
     @Override public void keyReleased(KeyEvent e) {}
