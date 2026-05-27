@@ -21,10 +21,12 @@ public class BoardGame {
     private int playerNum, prevMouseX, prevMouseY;
     private String state;
     private Piece testingPiece;
-    private Font headerFont, scoreFont, rulesTitleFont, rulesBodyFont;
+    private Font headerFont, scoreFont, titleFont, bodyFont;
+    private Piece botActivePiece;
+    private int botTargetRow, botTargetCol, delay;
+    private Screen screen;
 
-
-    public BoardGame(String[] playerNames) throws IOException {
+    public BoardGame(String[] playerNames, Screen screen) throws IOException {
         grid = new Grid(450, 50, 25);
 
         bluePieces = new ArrayList<>();
@@ -110,32 +112,40 @@ public class BoardGame {
             }
         }
 
-        //headerFont = new Font("Segoe UI", Font.BOLD, 22);
-        //scoreFont = new Font("Segoe UI", Font.BOLD, 26);
-        rulesTitleFont = new Font("Times New Roman", Font.BOLD, 80);
-        rulesBodyFont = new Font("Times New Roman", Font.PLAIN, 25);
+        titleFont = new Font("Times New Roman", Font.BOLD, 80);
+        bodyFont = new Font("Times New Roman", Font.PLAIN, 25);
+
+        this.screen = screen;
+        delay = -1;
     }
 
     public void draw(Graphics g) {
         if (state.equals("play")) {
             grid.draw(g, board, pieceColors);
-            for (Piece piece : allPieces.get(playerNum)) {
-                piece.draw(g);
+            if (playerNum < allPieces.size() && !allPieces.get(playerNum).isEmpty()) {
+                for (Piece piece : new ArrayList<>(allPieces.get(playerNum))) {
+                    piece.draw(g);
+                }
             }
             //Draw arrows
 
-           //Blue
+            //Blue
             drawArrows(g, grid.getX() - 5 , grid.getY() - 5, Color.BLUE);
-           //green
-           drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() - 5, Color.GREEN);
-           //yellow
-           drawArrows(g, grid.getX() - 5 , grid.getY() + 20 * grid.getSquareSize() + 5, Color.YELLOW);
-           //Red
-           drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() + 20 * grid.getSquareSize() + 5, Color.RED);
-
-
-
-
+            //green
+            drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() - 5, Color.GREEN);
+            //yellow
+            drawArrows(g, grid.getX() - 5 , grid.getY() + 20 * grid.getSquareSize() + 5, Color.YELLOW);
+            //Red
+            drawArrows(g, grid.getX() + 20 * grid.getSquareSize() + 5, grid.getY() + 20 * grid.getSquareSize() + 5, Color.RED);
+            if (delay != -1) {
+                delay++;
+                if (delay > 10) {
+                    delay = -1;
+                    state = "endscreen";
+                }
+            }
+        } else if (state.equals("setup")) {
+            
         } else if (state.equals("rules")) {
             tutorialGrid.draw(g, tutorialBoard, pieceColors);
             for (Piece piece : tutorialPieces) {
@@ -143,30 +153,48 @@ public class BoardGame {
             }
             testingPiece.draw(g);
             g.setColor(Color.BLACK);
-            g.setFont(rulesTitleFont);
+            g.setFont(titleFont);
             g.drawString("Blokus Rules", 250, 80);
-            g.setFont(rulesBodyFont);
-            g.drawString("4 Players Have Pieces of Their Color", 300, 150);
-            g.drawString("Your First Piece Must be In Your Corner", 300, 200);
-            g.drawString("Your Other Pieces Must be Corner-To-Corner", 300, 250);
-            g.drawString("Your Pieces can Touch Other Players' but not Overlap", 300, 300);
-            g.drawString("Once No One can Place a Piece, Squares are Counted", 300, 350);
-            g.drawString("The Player with the Least Squares Left Not Placed Wins", 300, 400);
+            g.setFont(bodyFont);
+            g.drawString("4 Players Have Pieces of Their Color", 325, 150);
+            g.drawString("Your First Piece Must be In Your Corner", 325, 200);
+            g.drawString("Your Other Pieces Must be Corner-To-Corner", 325, 250);
+            g.drawString("Your Pieces can Touch Other Players' but not Overlap", 325, 300);
+            g.drawString("Once No One can Place a Piece, Squares are Counted", 325, 350);
+            g.drawString("The Player with the Least Squares Left Not Placed Wins", 325, 400);
 
-            g.drawString("Use Mouse and E/Q", 25, 400);
+            g.drawString("Use Mouse, E/Q, & WASD", 25, 400);
             g.drawString("Try with This Piece", 25, 450);
 
-            g.setFont(rulesTitleFont);
+            g.setFont(titleFont);
             g.drawString("9 (Winner)", 500, 475);
             g.drawString("10", 500, 575);
         } else if (state.equals("endscreen")) {
             int[] ranks = rankPlayers();
             g.setColor(Color.BLACK);
-            g.setFont(rulesTitleFont);
+            g.setFont(titleFont);
             for (int i = 0; i < 4; i++) {
                 g.drawString(playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]), 300, 100 + i * 100);
             }
             
+        }
+    }
+
+    public void update() {
+        if (botActivePiece == null) return;
+        if (botActivePiece.stepTowardsTarget()) {
+            int[][] layout = botActivePiece.getLayout();
+            for (int pr = 0; pr < layout.length; pr++) {
+                for (int pc = 0; pc < layout[pr].length; pc++) {
+                    if (layout[pr][pc] == 1) {
+                        board[botTargetRow + pr][botTargetCol + pc] = playerNum;
+                    }
+                }
+            }
+            allPieces.get(playerNum).remove(botActivePiece);
+            botActivePiece = null;
+            organizePieces();
+            passPlay();
         }
     }
 
@@ -251,19 +279,7 @@ public class BoardGame {
         if (removed != null) {
             allPieces.get(playerNum).remove(removed);
             organizePieces();
-            int playersTested = 0;
-            do {
-                playerNum++;
-                playersTested++;
-                if (playersTested > 4) {
-                    state = "endscreen";
-                    break;
-                }
-                if (playerNum > 3) {
-                    playerNum = 0;
-                }
-            }
-            while (!canMakeMove());
+            passPlay();
             
         }
         if (testingPiece.getSelected()) {
@@ -409,26 +425,6 @@ public class BoardGame {
         return false;
     }
 
-    public void organizePieces() {
-        int x = 25;
-        int y = 25;
-        int longestY = 0;
-        for (Piece piece : allPieces.get(playerNum)) {
-            int[][] layout = piece.getLayout();
-            if (x + layout[0].length * 25 + 25 >= 425) {
-                x = 25;
-                y += longestY + 25;
-                longestY = 0;
-            }
-            piece.setPosition(x, y);
-            piece.setOgPosition(x, y);
-            x += layout[0].length * 25 + 25;
-            if (layout.length * 25 > longestY) {
-                longestY = layout.length * 25;
-            }
-        }
-    }
-
     public int[] rankPlayers() {
         int[] ranks = new int[] {0, 1, 2, 3};
         for (int i = 0; i < playerNames.length - 1; i++) {
@@ -443,6 +439,109 @@ public class BoardGame {
         return ranks;
     }
 
+    /**
+     * Makes a valid move for the current player automatically.
+     * Strategy: tries pieces largest-first. For the biggest piece that has
+     * any valid placement, picks the placement whose center of mass is
+     * closest to the board center (most central positioning).
+     */
+    public void botMove() {
+        if (botActivePiece != null) return; // already animating
+        ArrayList<Piece> pieces = allPieces.get(playerNum);
+        Collections.shuffle(pieces);
+        pieces.sort((a, b) -> b.getSquares() - a.getSquares());
+
+        // Board center in cell coordinates
+        double boardCenterR = (board.length    - 1) / 2.0;  // 9.5
+        double boardCenterC = (board[0].length - 1) / 2.0;  // 9.5
+
+        for (Piece piece : pieces) {
+
+            // Track the best placement found for this piece
+            int      bestRow    = -1;
+            int      bestCol    = -1;
+            int[][]  bestLayout = null;          // snapshot of the winning orientation
+            double   bestDist   = Double.MAX_VALUE;
+
+            for (int flipNum = 0; flipNum < 2; flipNum++) {
+                for (int rotNum = 0; rotNum < 4; rotNum++) {
+                    for (int r = 0; r < board.length; r++) {
+                        for (int c = 0; c < board[r].length; c++) {
+                            piece.setPosition(
+                                grid.getX() + c * grid.getSquareSize(),
+                                grid.getY() + r * grid.getSquareSize()
+                            );
+
+                            if (isValidMove(piece)) {
+                                // Compute center of mass of this placement in board coords
+                                int[][] layout = piece.getLayout();
+                                double sumR = 0, sumC = 0, filled = 0;
+                                for (int pr = 0; pr < layout.length; pr++) {
+                                    for (int pc = 0; pc < layout[pr].length; pc++) {
+                                        if (layout[pr][pc] == 1) {
+                                            sumR += r + pr;
+                                            sumC += c + pc;
+                                            filled++;
+                                        }
+                                    }
+                                }
+                                double dist = Math.sqrt(
+                                    Math.pow((sumR / filled) - boardCenterR, 2) +
+                                    Math.pow((sumC / filled) - boardCenterC, 2)
+                                );
+
+                                if (dist < bestDist) {
+                                    bestDist = dist;
+                                    bestRow  = r;
+                                    bestCol  = c;
+                                    // Deep-copy the layout so the orientation is frozen here
+                                    bestLayout = new int[layout.length][];
+                                    for (int i = 0; i < layout.length; i++)
+                                        bestLayout[i] = layout[i].clone();
+                                }
+                            }
+                        }
+                    }
+                    piece.rotate(true);
+                }
+                piece.flip(true);
+            }
+            piece.resetPosition(); // Restore x/y for tray; shape is already back after 4 rotations + 2 flips
+
+            if (bestLayout != null) {
+                piece.setShape(bestLayout);
+                piece.setTarget(
+                    grid.getX() + bestCol * grid.getSquareSize(),
+                    grid.getY() + bestRow * grid.getSquareSize()
+                );
+                botActivePiece = piece;
+                botTargetRow   = bestRow;
+                botTargetCol   = bestCol;
+                return;
+            }
+            // No valid placement for this piece — fall through to try the next smaller one
+        }
+    }
+
+    public void passPlay() {
+        int playersTested = 0;
+        do {
+            playerNum++;
+            playersTested++;
+            if (playersTested > 4) {
+                delay = 0;
+                return;
+            }
+            if (playerNum > 3) {
+                playerNum = 0;
+            }
+        }
+        while (!canMakeMove());
+        if (playerNames[playerNum].indexOf("Bot") != -1) {
+            botMove();
+        }
+    }
+
     public int getSquaresLeft() {
         return getSquaresLeft(playerNum);
     }
@@ -454,5 +553,10 @@ public class BoardGame {
         return total;
     }
     public String getState() {return state;}
-    public void setState(String state) {this.state = state;}
+    public void setState(String state) {
+        this.state = state;
+        if (state.equals("play") && playerNames[playerNum].indexOf("Bot") != -1) {
+            botMove();
+        }
+    }
 }

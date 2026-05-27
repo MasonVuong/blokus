@@ -10,8 +10,8 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     private String[] names;
 
     public Screen() throws IOException {
-        names = new String[] {"Blue", "Yellow", "Red", "Green"};
-        game = new BoardGame(names);
+        names = new String[] {"BotBlue", "BotYellow", "BotRed", "BotGreen"};
+        game = new BoardGame(names, this);
         timer = new Timer(30, this);
         timer.start();
         setLayout(null);
@@ -71,6 +71,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             startButton.setVisible(true);
             rulesButton.setVisible(true);
         } else if (e.getSource() == timer) {
+            game.update();
             repaint();
         }
     }
