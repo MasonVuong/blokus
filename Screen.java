@@ -35,7 +35,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         backButton.setFocusable(false);
         backButton.setVisible(false);
 
-        restartButton = new JButton("Play Again");
+        restartButton = new JButton("Replay");
         restartButton.setBounds(450, 500, 100, 50);
         restartButton.addActionListener(this);
         add(restartButton);

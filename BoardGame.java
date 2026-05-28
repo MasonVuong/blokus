@@ -10,6 +10,9 @@ Add Banner On Top
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
+import java.net.URL;
 
 public class BoardGame {
     private Grid grid, tutorialGrid;
@@ -147,6 +150,7 @@ public class BoardGame {
                 if (delay > 10) {
                     delay = -1;
                     state = "endscreen";
+                    playSound("Win.wav");
                 }
             }
         } else if (state.equals("setup")) {
@@ -530,23 +534,44 @@ public class BoardGame {
     }
 
     public void passPlay() {
-        int playersTested = 0;
-        do {
+        playerNum++;
+        if (playerNum > 3) playerNum = 0;
+
+        if (!canMakeMove()) {
+            playSound("Skip.wav");
+            playerNum++;
+            if (playerNum > 3) playerNum = 0;
+        }
+
+        int playersTested = 1;
+        while (!canMakeMove()) {
             playerNum++;
             playersTested++;
             if (playersTested > 4) {
                 delay = 0;
                 return;
             }
-            if (playerNum > 3) {
-                playerNum = 0;
-            }
+            if (playerNum > 3) playerNum = 0;
         }
 
-        while (!canMakeMove());
         if (playerNames[playerNum].indexOf("Bot") != -1) {
             botMove();
         }
+    }
+
+    public void playSound(String file) {
+        new Thread(() -> {
+            try {
+                AudioInputStream ais = AudioSystem.getAudioInputStream(new File(file));
+                Clip clip = AudioSystem.getClip();
+                clip.open(ais);
+                clip.start();
+                Thread.sleep(clip.getMicrosecondLength() / 1000);
+                clip.close();
+            } catch (Exception e) {
+                System.out.println("playSound error: " + e);
+            }
+        }).start();
     }
 
     public int getSquaresLeft() {

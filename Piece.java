@@ -11,6 +11,7 @@ public class Piece extends Sprite {
     private double velX, velY;
     private double floatX, floatY;   // sub-pixel accumulator to prevent rounding drift
     private boolean hasTarget = false;
+    private float speed;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
@@ -26,6 +27,7 @@ public class Piece extends Sprite {
                 squares += shape[r][c];
             }
         }
+        speed = 100;
     }
     /*
      * Rotates the piece 90 degrees.
@@ -115,8 +117,8 @@ public class Piece extends Sprite {
         double dy   = ty - getY();
         double dist = Math.sqrt(dx * dx + dy * dy);
         if (dist == 0) { velX = 0; velY = 0; }
-        else           { velX = 25.0 * dx / dist;
-                        velY = 25.0 * dy / dist; }
+        else           { velX = speed * dx / dist;
+                        velY = speed * dy / dist; }
     }
 
     /**
@@ -127,7 +129,7 @@ public class Piece extends Sprite {
         double dx = targetX - floatX;
         double dy = targetY - floatY;
         // Snap once the remaining distance is within one step
-        if (Math.sqrt(dx * dx + dy * dy) <= 25.0) {
+        if (Math.sqrt(dx * dx + dy * dy) <= speed) {
             setPosition(targetX, targetY);
             floatX   = targetX;
             floatY   = targetY;
