@@ -25,6 +25,7 @@ public class BoardGame {
     private Piece botActivePiece;
     private int botTargetRow, botTargetCol, delay;
     private Screen screen;
+    private int[] skippedPlayers;
 
     public BoardGame(String[] playerNames, Screen screen) throws IOException {
         grid = new Grid(450, 50, 25);
@@ -117,6 +118,10 @@ public class BoardGame {
 
         this.screen = screen;
         delay = -1;
+        skippedPlayers = new int[4];
+        for (int i = 0; i < skippedPlayers.length; i++) {
+            skippedPlayers[i] = -1;
+        }
     }
 
     public void draw(Graphics g) {
@@ -174,14 +179,15 @@ public class BoardGame {
             g.setColor(Color.BLACK);
             g.setFont(titleFont);
             for (int i = 0; i < 4; i++) {
-                g.drawString(playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]), 300, 100 + i * 100);
+                String text = i + 1 + ". " + playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]);
+                FontMetrics metrics = g.getFontMetrics(titleFont);
+                g.drawString(text, 500 - metrics.stringWidth(text) / 2, 100 + i * 100);
             }
-            
         }
     }
 
     public void update() {
-        if (botActivePiece == null) return;
+        if (botActivePiece == null || !state.equals("play")) return;
         if (botActivePiece.stepTowardsTarget()) {
             int[][] layout = botActivePiece.getLayout();
             for (int pr = 0; pr < layout.length; pr++) {
@@ -536,6 +542,7 @@ public class BoardGame {
                 playerNum = 0;
             }
         }
+
         while (!canMakeMove());
         if (playerNames[playerNum].indexOf("Bot") != -1) {
             botMove();
