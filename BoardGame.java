@@ -10,6 +10,9 @@ Add Banner On Top
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
+import java.net.URL;
 
 public class BoardGame {
     private Grid grid, tutorialGrid;
@@ -25,6 +28,7 @@ public class BoardGame {
     private Piece botActivePiece;
     private int botTargetRow, botTargetCol, delay;
     private Screen screen;
+    private int[] skippedPlayers;
 
     public BoardGame(String[] playerNames, Screen screen) throws IOException {
         grid = new Grid(450, 50, 25);
@@ -117,6 +121,10 @@ public class BoardGame {
 
         this.screen = screen;
         delay = -1;
+        skippedPlayers = new int[4];
+        for (int i = 0; i < skippedPlayers.length; i++) {
+            skippedPlayers[i] = -1;
+        }
     }
 
     public void draw(Graphics g) {
@@ -142,6 +150,7 @@ public class BoardGame {
                 if (delay > 10) {
                     delay = -1;
                     state = "endscreen";
+                    playSound("Win.wav");
                 }
             }
         } else if (state.equals("setup")) {
@@ -174,14 +183,15 @@ public class BoardGame {
             g.setColor(Color.BLACK);
             g.setFont(titleFont);
             for (int i = 0; i < 4; i++) {
-                g.drawString(playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]), 300, 100 + i * 100);
+                String text = i + 1 + ". " + playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]);
+                FontMetrics metrics = g.getFontMetrics(titleFont);
+                g.drawString(text, 500 - metrics.stringWidth(text) / 2, 100 + i * 100);
             }
-            
         }
     }
 
     public void update() {
-        if (botActivePiece == null) return;
+        if (botActivePiece == null || !state.equals("play")) return;
         if (botActivePiece.stepTowardsTarget()) {
             int[][] layout = botActivePiece.getLayout();
             for (int pr = 0; pr < layout.length; pr++) {
@@ -524,22 +534,44 @@ public class BoardGame {
     }
 
     public void passPlay() {
-        int playersTested = 0;
-        do {
+        playerNum++;
+        if (playerNum > 3) playerNum = 0;
+
+        if (!canMakeMove()) {
+            playSound("Skip.wav");
+            playerNum++;
+            if (playerNum > 3) playerNum = 0;
+        }
+
+        int playersTested = 1;
+        while (!canMakeMove()) {
             playerNum++;
             playersTested++;
             if (playersTested > 4) {
                 delay = 0;
                 return;
             }
-            if (playerNum > 3) {
-                playerNum = 0;
-            }
+            if (playerNum > 3) playerNum = 0;
         }
-        while (!canMakeMove());
+
         if (playerNames[playerNum].indexOf("Bot") != -1) {
             botMove();
         }
+    }
+
+    public void playSound(String file) {
+        new Thread(() -> {
+            try {
+                AudioInputStream ais = AudioSystem.getAudioInputStream(new File(file));
+                Clip clip = AudioSystem.getClip();
+                clip.open(ais);
+                clip.start();
+                Thread.sleep(clip.getMicrosecondLength() / 1000);
+                clip.close();
+            } catch (Exception e) {
+                System.out.println("playSound error: " + e);
+            }
+        }).start();
     }
 
     public int getSquaresLeft() {

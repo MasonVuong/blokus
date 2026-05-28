@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Screen extends JPanel implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
     private BoardGame game;
     private Timer timer;
-    private JButton startButton, rulesButton, backButton;
+    private JButton startButton, rulesButton, backButton, restartButton;
     private String[] names;
 
     public Screen() throws IOException {
@@ -34,6 +34,13 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         add(backButton);
         backButton.setFocusable(false);
         backButton.setVisible(false);
+
+        restartButton = new JButton("Replay");
+        restartButton.setBounds(450, 500, 100, 50);
+        restartButton.addActionListener(this);
+        add(restartButton);
+        restartButton.setFocusable(false);
+        restartButton.setVisible(false);
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -70,9 +77,21 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             backButton.setVisible(false);
             startButton.setVisible(true);
             rulesButton.setVisible(true);
+        } else if (e.getSource() == restartButton) {
+            try {
+                game = new BoardGame(names, this);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+            restartButton.setVisible(false);
+            startButton.setVisible(true);
+            rulesButton.setVisible(true);
         } else if (e.getSource() == timer) {
             game.update();
             repaint();
+            if (game.getState().equals("endscreen")) {
+                restartButton.setVisible(true);
+            }
         }
     }
 
