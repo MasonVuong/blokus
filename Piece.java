@@ -27,7 +27,7 @@ public class Piece extends Sprite {
                 squares += shape[r][c];
             }
         }
-        speed = 100;
+        speed = 35;
     }
     /*
      * Rotates the piece 90 degrees.
