@@ -23,45 +23,33 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         timer.start();
         setLayout(null);
 
-       
-
-
         startButton = new JButton("Start");
-        startButton.setBounds(400, 400, 200, 60); 
+        startButton.setBounds(400, 400, 200, 50); 
         startButton.setBorder(BorderFactory.createEtchedBorder()); 
-
         startButton.addActionListener(this);
         add(startButton);
         startButton.setFocusable(false); 
-
         startButton.setContentAreaFilled(true);
         startButton.setOpaque(true);
 
-
-        
-
         rulesButton = new JButton("Rules");
-        rulesButton.setBounds(400, 500, 200, 60);
-
+        rulesButton.setBounds(400, 500, 200, 50);
         rulesButton.setBorder(BorderFactory.createEtchedBorder()); 
-
-
         rulesButton.addActionListener(this);
         add(rulesButton);
         rulesButton.setFocusable(false);
 
-        
-
         backButton = new JButton("Back");
         backButton.setBounds(50, 50, 100, 50);
+        backButton.setBorder(BorderFactory.createEtchedBorder()); 
         backButton.addActionListener(this);
         add(backButton);
         backButton.setFocusable(false);
         backButton.setVisible(false);
-        backButton.setBorder(BorderFactory.createEtchedBorder()); 
 
         restartButton = new JButton("Replay");
         restartButton.setBounds(450, 500, 100, 50);
+        restartButton.setBorder(BorderFactory.createEtchedBorder()); 
         restartButton.addActionListener(this);
         add(restartButton);
         restartButton.setFocusable(false);
@@ -69,29 +57,34 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
 
         blueText = new JTextField();
         blueText.setBounds(550, 100, 150, 50);
+        blueText.setBorder(BorderFactory.createEtchedBorder()); 
         add(blueText);
         blueText.setVisible(false);
 
         yellowText = new JTextField("Yellow Bot");
         yellowText.setBounds(550, 175, 150, 50);
+        yellowText.setBorder(BorderFactory.createEtchedBorder()); 
         add(yellowText);
         yellowText.setVisible(false);
         yellowText.setEditable(false);
 
         redText = new JTextField("Red Bot");
         redText.setBounds(550, 250, 150, 50);
+        redText.setBorder(BorderFactory.createEtchedBorder()); 
         add(redText);
         redText.setVisible(false);
         redText.setEditable(false);
 
         greenText = new JTextField("Green Bot");
         greenText.setBounds(550, 325, 150, 50);
+        greenText.setBorder(BorderFactory.createEtchedBorder()); 
         add(greenText);
         greenText.setVisible(false);
         greenText.setEditable(false);
 
         blueButton = new JButton("Make Bot");
         blueButton.setBounds(400, 100, 150, 50);
+        blueButton.setBorder(BorderFactory.createEtchedBorder()); 
         blueButton.addActionListener(this);
         add(blueButton);
         blueButton.setFocusable(false);
@@ -99,6 +92,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
 
         yellowButton = new JButton("Make Human");
         yellowButton.setBounds(400, 175, 150, 50);
+        yellowButton.setBorder(BorderFactory.createEtchedBorder()); 
         yellowButton.addActionListener(this);
         add(yellowButton);
         yellowButton.setFocusable(false);
@@ -106,6 +100,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
 
         redButton = new JButton("Make Human");
         redButton.setBounds(400, 250, 150, 50);
+        redButton.setBorder(BorderFactory.createEtchedBorder()); 
         redButton.addActionListener(this);
         add(redButton);
         redButton.setFocusable(false);
@@ -113,6 +108,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
 
         greenButton = new JButton("Make Human");
         greenButton.setBounds(400, 325, 150, 50);
+        greenButton.setBorder(BorderFactory.createEtchedBorder()); 
         greenButton.addActionListener(this);
         add(greenButton);
         greenButton.setFocusable(false);
