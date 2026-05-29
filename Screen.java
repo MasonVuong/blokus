@@ -16,17 +16,34 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         timer.start();
         setLayout(null);
 
+       
+
+
         startButton = new JButton("Start");
-        startButton.setBounds(450, 400, 100, 50);
+        startButton.setBounds(400, 400, 200, 60); 
+        startButton.setBorder(BorderFactory.createEtchedBorder()); 
+
         startButton.addActionListener(this);
         add(startButton);
         startButton.setFocusable(false); 
 
+        startButton.setContentAreaFilled(true);
+        startButton.setOpaque(true);
+
+
+        
+
         rulesButton = new JButton("Rules");
-        rulesButton.setBounds(450, 500, 100, 50);
+        rulesButton.setBounds(400, 500, 200, 60);
+
+        rulesButton.setBorder(BorderFactory.createEtchedBorder()); 
+
+
         rulesButton.addActionListener(this);
         add(rulesButton);
         rulesButton.setFocusable(false);
+
+        
 
         backButton = new JButton("Back");
         backButton.setBounds(50, 50, 100, 50);
@@ -34,6 +51,7 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         add(backButton);
         backButton.setFocusable(false);
         backButton.setVisible(false);
+        backButton.setBorder(BorderFactory.createEtchedBorder()); 
 
         addMouseListener(this);
         addMouseMotionListener(this);

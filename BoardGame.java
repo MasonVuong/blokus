@@ -409,25 +409,6 @@ public class BoardGame {
         return false;
     }
 
-    public void organizePieces() {
-        int x = 25;
-        int y = 25;
-        int longestY = 0;
-        for (Piece piece : allPieces.get(playerNum)) {
-            int[][] layout = piece.getLayout();
-            if (x + layout[0].length * 25 + 25 >= 425) {
-                x = 25;
-                y += longestY + 25;
-                longestY = 0;
-            }
-            piece.setPosition(x, y);
-            piece.setOgPosition(x, y);
-            x += layout[0].length * 25 + 25;
-            if (layout.length * 25 > longestY) {
-                longestY = layout.length * 25;
-            }
-        }
-    }
 
     public int[] rankPlayers() {
         int[] ranks = new int[] {0, 1, 2, 3};
