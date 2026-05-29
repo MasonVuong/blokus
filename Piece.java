@@ -6,6 +6,12 @@ public class Piece extends Sprite {
     private Color color;
     private boolean selected, flipped;
     private int squares, ogX, ogY, rotationAmount;
+    // Replace the old target fields with these
+    private int    targetX, targetY;
+    private double velX, velY;
+    private double floatX, floatY;   // sub-pixel accumulator to prevent rounding drift
+    private boolean hasTarget = false;
+    private float speed;
 
     public Piece(int x, int y, int squareSize, int[][] shape, Color color) {
         super(x, y, squareSize);
@@ -21,6 +27,7 @@ public class Piece extends Sprite {
                 squares += shape[r][c];
             }
         }
+        speed = 100;
     }
     /*
      * Rotates the piece 90 degrees.
@@ -93,6 +100,49 @@ public class Piece extends Sprite {
         this.setX(this.getX() + dx);
         this.setY(this.getY() + dy);
     }
+
+    /** 
+     * Sets the destination and immediately computes the X/Y velocity components
+     * so the piece travels exactly 5 pixels per frame toward the target.
+     */
+    public void setTarget(int tx, int ty) {
+        this.targetX = tx;
+        this.targetY = ty;
+        this.hasTarget = true;
+        // Initialize the float accumulator from the current integer position
+        this.floatX = getX();
+        this.floatY = getY();
+        // Decompose 5px/frame into X and Y components along the direction vector
+        double dx   = tx - getX();
+        double dy   = ty - getY();
+        double dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist == 0) { velX = 0; velY = 0; }
+        else           { velX = speed * dx / dist;
+                        velY = speed * dy / dist; }
+    }
+
+    /**
+     * Advances the piece one frame toward its target using the pre-computed velocity.
+     * @return true once the piece has arrived
+     */
+    public boolean stepTowardsTarget() {
+        double dx = targetX - floatX;
+        double dy = targetY - floatY;
+        // Snap once the remaining distance is within one step
+        if (Math.sqrt(dx * dx + dy * dy) <= speed) {
+            setPosition(targetX, targetY);
+            floatX   = targetX;
+            floatY   = targetY;
+            hasTarget = false;
+            return true;
+        }
+        floatX += velX;
+        floatY += velY;
+        setX((int) Math.round(floatX));
+        setY((int) Math.round(floatY));
+        return false;
+    }
+
     public void draw(Graphics g) {
     
      
@@ -140,9 +190,9 @@ public class Piece extends Sprite {
     }
 
     /**
- * Snaps the piece's X and Y anchor coordinates to the nearest multiple of 25.
- * This aligns the piece perfectly with the board grid lines.
- */
+     * Snaps the piece's X and Y anchor coordinates to the nearest multiple of 25.
+     * This aligns the piece perfectly with the board grid lines.
+     */
     public void autoAlign() {
         int currentX = getX();
         int currentY = getY();
@@ -167,10 +217,12 @@ public class Piece extends Sprite {
     public boolean getSelected() {return selected;}
     public void setSelected(boolean selected) {this.selected = selected;}
     public int[][] getLayout() {return shape;}
+    public void setShape(int[][] layout) {shape = layout;}
     public void setOgPosition(int ogX, int ogY) {
         this.ogX = ogX;
         this.ogY = ogY;
     }
     public boolean isFlipped() {return flipped;}
     public int getSquares() {return squares;}
+    public boolean hasTarget() { return hasTarget; }
 }

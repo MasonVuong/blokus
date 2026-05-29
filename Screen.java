@@ -6,12 +6,12 @@ import java.io.IOException;
 public class Screen extends JPanel implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
     private BoardGame game;
     private Timer timer;
-    private JButton startButton, rulesButton, backButton;
+    private JButton startButton, rulesButton, backButton, restartButton;
     private String[] names;
 
     public Screen() throws IOException {
-        names = new String[] {"Blue", "Yellow", "Red", "Green"};
-        game = new BoardGame(names);
+        names = new String[] {"BotBlue", "BotYellow", "BotRed", "BotGreen"};
+        game = new BoardGame(names, this);
         timer = new Timer(30, this);
         timer.start();
         setLayout(null);
@@ -53,6 +53,13 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         backButton.setVisible(false);
         backButton.setBorder(BorderFactory.createEtchedBorder()); 
 
+        restartButton = new JButton("Replay");
+        restartButton.setBounds(450, 500, 100, 50);
+        restartButton.addActionListener(this);
+        add(restartButton);
+        restartButton.setFocusable(false);
+        restartButton.setVisible(false);
+
         addMouseListener(this);
         addMouseMotionListener(this);
         this.addKeyListener(this);
@@ -88,8 +95,21 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             backButton.setVisible(false);
             startButton.setVisible(true);
             rulesButton.setVisible(true);
+        } else if (e.getSource() == restartButton) {
+            try {
+                game = new BoardGame(names, this);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+            restartButton.setVisible(false);
+            startButton.setVisible(true);
+            rulesButton.setVisible(true);
         } else if (e.getSource() == timer) {
+            game.update();
             repaint();
+            if (game.getState().equals("endscreen")) {
+                restartButton.setVisible(true);
+            }
         }
     }
 
