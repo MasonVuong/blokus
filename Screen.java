@@ -7,10 +7,17 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     private BoardGame game;
     private Timer timer;
     private JButton startButton, rulesButton, backButton, restartButton;
+    private JTextField blueText, yellowText, redText, greenText;
     private String[] names;
+    private boolean blueBot, yellowBot, redBot, greenBot;
+    private JButton blueButton, yellowButton, redButton, greenButton;
 
     public Screen() throws IOException {
-        names = new String[] {"BotBlue", "BotYellow", "BotRed", "BotGreen"};
+        names = new String[] {"Blue", "Yellow", "Red", "Green"};
+        blueBot = false;
+        yellowBot = true;
+        redBot = true;
+        greenBot = true;
         game = new BoardGame(names, this);
         timer = new Timer(30, this);
         timer.start();
@@ -60,6 +67,57 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
         restartButton.setFocusable(false);
         restartButton.setVisible(false);
 
+        blueText = new JTextField();
+        blueText.setBounds(550, 100, 150, 50);
+        add(blueText);
+        blueText.setVisible(false);
+
+        yellowText = new JTextField("Yellow Bot");
+        yellowText.setBounds(550, 175, 150, 50);
+        add(yellowText);
+        yellowText.setVisible(false);
+        yellowText.setEditable(false);
+
+        redText = new JTextField("Red Bot");
+        redText.setBounds(550, 250, 150, 50);
+        add(redText);
+        redText.setVisible(false);
+        redText.setEditable(false);
+
+        greenText = new JTextField("Green Bot");
+        greenText.setBounds(550, 325, 150, 50);
+        add(greenText);
+        greenText.setVisible(false);
+        greenText.setEditable(false);
+
+        blueButton = new JButton("Make Bot");
+        blueButton.setBounds(400, 100, 150, 50);
+        blueButton.addActionListener(this);
+        add(blueButton);
+        blueButton.setFocusable(false);
+        blueButton.setVisible(false);
+
+        yellowButton = new JButton("Make Human");
+        yellowButton.setBounds(400, 175, 150, 50);
+        yellowButton.addActionListener(this);
+        add(yellowButton);
+        yellowButton.setFocusable(false);
+        yellowButton.setVisible(false);
+
+        redButton = new JButton("Make Human");
+        redButton.setBounds(400, 250, 150, 50);
+        redButton.addActionListener(this);
+        add(redButton);
+        redButton.setFocusable(false);
+        redButton.setVisible(false);
+
+        greenButton = new JButton("Make Human");
+        greenButton.setBounds(400, 325, 150, 50);
+        greenButton.addActionListener(this);
+        add(greenButton);
+        greenButton.setFocusable(false);
+        greenButton.setVisible(false);
+
         addMouseListener(this);
         addMouseMotionListener(this);
         this.addKeyListener(this);
@@ -82,8 +140,29 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
-            game.setState("play");
-            startButton.setVisible(false);
+            if (game.getState().equals("start")) {
+                game.setState("setup");
+                blueText.setVisible(true);
+                yellowText.setVisible(true);
+                redText.setVisible(true);
+                greenText.setVisible(true);
+                blueButton.setVisible(true);
+                yellowButton.setVisible(true);
+                redButton.setVisible(true);
+                greenButton.setVisible(true);
+            } else {
+                game.setNames(new String[] {blueText.getText(), yellowText.getText(), redText.getText(), greenText.getText()});
+                game.setState("play");
+                startButton.setVisible(false);
+                blueText.setVisible(false);
+                yellowText.setVisible(false);
+                redText.setVisible(false);
+                greenText.setVisible(false);
+                blueButton.setVisible(false);
+                yellowButton.setVisible(false);
+                redButton.setVisible(false);
+                greenButton.setVisible(false);
+            }
             rulesButton.setVisible(false);
         } else if (e.getSource() == rulesButton) {
             game.setState("rules");
@@ -104,7 +183,51 @@ public class Screen extends JPanel implements ActionListener, MouseListener, Mou
             restartButton.setVisible(false);
             startButton.setVisible(true);
             rulesButton.setVisible(true);
-        } else if (e.getSource() == timer) {
+        } else if (e.getSource() == blueButton) {
+            blueBot = !blueBot;
+            if (blueBot) {
+                blueButton.setText("Make Human");
+                blueText.setText("Blue Bot");
+                blueText.setEditable(false);
+            } else {
+               blueButton.setText("Make Bot"); 
+               blueText.setText("");
+               blueText.setEditable(true);
+            }
+        } else if (e.getSource() == yellowButton) {
+            yellowBot = !yellowBot;
+            if (yellowBot) {
+                yellowButton.setText("Make Human");
+                yellowText.setText("Yellow Bot");
+                yellowText.setEditable(false);
+            } else {
+               yellowButton.setText("Make Bot"); 
+               yellowText.setText("");
+               yellowText.setEditable(true);
+            }
+        } else if (e.getSource() == redButton) {
+            redBot = !redBot;
+            if (redBot) {
+                redButton.setText("Make Human");
+                redText.setText("Red Bot");
+                redText.setEditable(false);
+            } else {
+               redButton.setText("Make Bot"); 
+               redText.setText("");
+               redText.setEditable(true);
+            }
+        } else if (e.getSource() == greenButton) {
+            greenBot = !greenBot;
+            if (greenBot) {
+                greenButton.setText("Make Human");
+                greenText.setText("Green Bot");
+                greenText.setEditable(false);
+            } else {
+               greenButton.setText("Make Bot"); 
+               greenText.setText("");
+               greenText.setEditable(true);
+            }
+        }else if (e.getSource() == timer) {
             game.update();
             repaint();
             if (game.getState().equals("endscreen")) {

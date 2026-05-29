@@ -72,7 +72,6 @@ public class BoardGame {
                 rowNum++;
             }
             line = br.readLine();
-            state = "Start";
         }
         if (layout.length != 0) {
             for (int j = 0; j < allPieces.size(); j++) {
@@ -125,10 +124,39 @@ public class BoardGame {
         for (int i = 0; i < skippedPlayers.length; i++) {
             skippedPlayers[i] = -1;
         }
-    }
 
+        state = "start";
+    }
+    
     public void draw(Graphics g) {
-        if (state.equals("play")) {
+        FontMetrics metrics = g.getFontMetrics(titleFont);
+        if (state.equals("start")) {
+            g.setColor(Color.BLUE);
+            g.fillRect(0, 0, 500, 300);
+            g.setColor(Color.YELLOW);
+            g.fillRect(0, 300, 500, 300);
+            g.setColor(Color.RED);
+            g.fillRect(500, 300, 500, 300);
+            g.setColor(Color.GREEN);
+            g.fillRect(500, 0, 500, 300);
+            g.setColor(new Color(222, 222, 222));
+            g.fillRect(300, 100, 400, 400);
+            g.setFont(titleFont);
+            g.setColor(Color.BLACK);
+            g.drawString("Blokus", 500 - metrics.stringWidth("Blokus") / 2, 200);
+        } else if (state.equals("setup")) {
+            g.setColor(Color.BLACK);
+            g.setFont(titleFont);
+            g.drawString("Setup Names and Bots", 500 - metrics.stringWidth("Setup Names and Bots") / 2, 75);
+            g.setColor(Color.BLUE);
+            g.fillRect(350, 100, 50, 50);
+            g.setColor(Color.YELLOW);
+            g.fillRect(350, 175, 50, 50);
+            g.setColor(Color.RED);
+            g.fillRect(350, 250, 50, 50);
+            g.setColor(Color.GREEN);
+            g.fillRect(350, 325, 50, 50);
+        } else if (state.equals("play")) {
             grid.draw(g, board, pieceColors);
             if (playerNum < allPieces.size() && !allPieces.get(playerNum).isEmpty()) {
                 for (Piece piece : new ArrayList<>(allPieces.get(playerNum))) {
@@ -153,8 +181,6 @@ public class BoardGame {
                     playSound("Win.wav");
                 }
             }
-        } else if (state.equals("setup")) {
-            
         } else if (state.equals("rules")) {
             tutorialGrid.draw(g, tutorialBoard, pieceColors);
             for (Piece piece : tutorialPieces) {
@@ -184,7 +210,6 @@ public class BoardGame {
             g.setFont(titleFont);
             for (int i = 0; i < 4; i++) {
                 String text = i + 1 + ". " + playerNames[ranks[i]] + ": " + getSquaresLeft(ranks[i]);
-                FontMetrics metrics = g.getFontMetrics(titleFont);
                 g.drawString(text, 500 - metrics.stringWidth(text) / 2, 100 + i * 100);
             }
         }
@@ -591,4 +616,5 @@ public class BoardGame {
             botMove();
         }
     }
+    public void setNames(String[] names) {playerNames = names;}
 }
