@@ -5,6 +5,7 @@ public class Piece extends Sprite {
     private int[][] shape; 
     private Color color;
     private boolean selected, flipped;
+    private boolean lastFlipHorizontal; // axis of the most recent flip, so it can be undone correctly
     private int squares, ogX, ogY, rotationAmount;
     // Replace the old target fields with these
     private int    targetX, targetY;
@@ -90,6 +91,7 @@ public class Piece extends Sprite {
         
         this.shape = mirroredShape;
         this.flipped = !this.flipped; // Every flip toggles face-up vs face-down
+        this.lastFlipHorizontal = horizontal; // remember the axis so resetPosition can undo it
     }
     /**
      * Shifts the sprite's position by a relative offset amount.
@@ -211,7 +213,7 @@ public class Piece extends Sprite {
             rotate(false);
         }
         if (flipped) {
-            flip(true);
+            flip(lastFlipHorizontal); // undo on the SAME axis the player flipped, not always horizontal
         }
     }
     public boolean getSelected() {return selected;}
