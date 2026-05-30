@@ -559,24 +559,21 @@ public class BoardGame {
     }
 
     public void passPlay() {
-        playerNum++;
-        if (playerNum > 3) playerNum = 0;
+        // Advance to the next player, wrapping within 0..3.
+        playerNum = (playerNum + 1) % 4;
 
-        if (!canMakeMove()) {
-            playSound("Skip.wav");
-            playerNum++;
-            if (playerNum > 3) playerNum = 0;
-        }
-
-        int playersTested = 1;
+        // Skip every consecutive player who has no legal move. Test at most
+        // 4 players; if none can move, the game is over.
+        int playersTested = 0;
         while (!canMakeMove()) {
-            playerNum++;
+            playSound("Skip.wav");
             playersTested++;
-            if (playersTested > 4) {
+            if (playersTested >= 4) {
+                // No one can move: trigger the end-screen transition.
                 delay = 0;
                 return;
             }
-            if (playerNum > 3) playerNum = 0;
+            playerNum = (playerNum + 1) % 4;
         }
 
         if (playerNames[playerNum].indexOf("Bot") != -1) {
